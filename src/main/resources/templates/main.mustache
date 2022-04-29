@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="display: flex;">
+        <select id="select-id" style="width: 100px; margin-right: 10px">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <button id="btn-search">버튼</button>
+    </div>
+    <div id="result-box"></div>
+</body>
+
+<script>
+    $("#btn-search").click(() => {
+        download();
+    });
+
+    async function download() {
+        let id = $("#select-id").val();
+        console.log(id);
+        let response = await fetch(`/api/download/${id}`);
+        let responseParse = await response.json();
+        if (response.status === 200) {
+            let result = responseParse.response.body.items.item;
+
+            for (let i in result) {
+                $("#result-box").append(renderBox(result[i]));
+            }
+        }
+    }
+
+    function renderBox(result) {
+        switch (result.sky) {
+            case 1:
+                result.sky = "맑음";
+                break;
+            case 2:
+                result.sky = "구름";
+                break;
+            case 3:
+                result.sky = "흐림";
+                break;
+            case 4:
+                result.sky = "비";
+                break;
+            case 5:
+                result.sky = "소나기";
+                break;
+            case 6:
+                result.sky = "비눈";
+                break;
+            case 7:
+                result.sky = "눈비";
+                break;
+            case 8:
+                result.sky = "눈";
+                break;
+
+        }
+        return `
+        <h2>코스명 : ${result.courseName}</h2>
+            <ul>
+                <li>지역 : ${result.courseAreaName} ${result.spotAreaName}</li>
+                <li>관광지명 : ${result.spotName}</li>
+                <li>예보시간 : ${result.tm}</li>
+                <li>하늘상태 : ${result.sky}</li>
+                <li>강수량 : ${result.rn}</li>
+            </ul>
+        `;
+    }
+</script>
+
+</html>
